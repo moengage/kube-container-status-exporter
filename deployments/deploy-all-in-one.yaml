@@ -1,0 +1,92 @@
+# Configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-container-status-exporter
+  namespace: kube-system
+  labels:
+    app: kube-container-status-exporter
+data:
+  POD_LABEL_KEY: kube-container-status-exporter
+  POD_LABEL_VALUE: "true"
+  LOCAL: "false"
+---
+# serviceaccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-container-status-exporter
+  namespace: kube-system
+  labels:
+    app: kube-container-status-exporter
+---
+# Source: botkube/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-container-status-exporter
+  labels:
+    app: kube-container-status-exporter
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/status
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - list
+      - watch
+---
+# clusterrolebinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-container-status-exporter
+  labels:
+    app: kube-container-status-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kube-container-status-exporter
+subjects:
+- kind: ServiceAccount
+  name: kube-container-status-exporter
+  namespace: kube-system
+---
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-container-status-exporter
+  namespace: kube-system
+  labels:
+    app: kube-container-status-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-container-status-exporter
+  template:
+    metadata:
+      labels:
+        app: kube-container-status-exporter
+    spec:
+      serviceAccountName: kube-container-status-exporter
+      containers:
+        - name: kube-container-status-exporter
+          image: "public.ecr.aws/a4i9p0w5/moengage/kube-container-status-exporter:v0.1"
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: kube-container-status-exporter
+
