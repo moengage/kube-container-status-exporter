@@ -5,8 +5,8 @@ import logging
 
 
 # Run kubectl proxy for local development
-LOCAL = os.getenv('LOCAL', True)
-if LOCAL: from local import *
+LOCAL = os.getenv('LOCAL', 'true')
+if LOCAL == 'true': from local import *
 
 POD_LABEL_KEY = os.getenv('POD_LABEL_KEY', 'kube-container-status-exporter')
 POD_LABEL_VALUE = os.getenv('POD_LABEL_VALUE', 'true')
