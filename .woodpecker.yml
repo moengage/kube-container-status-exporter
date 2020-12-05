@@ -1,10 +1,18 @@
 pipeline:
   build:
     group: build
-    image: plugins/ecr
-    repo: public.ecr.aws/a4i9p0w5/moengage/kube-container-status-exporter
-    context: ./
-    tags:
-      - ${DRONE_TAG}
+    image: docker
+    commands:
+      - docker build -t ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME} .
+      - docker tag ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest public.ecr.aws/a4i9p0w5/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
+      - docker tag ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest public.ecr.aws/a4i9p0w5/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_TAG}
+      - docker push public.ecr.aws/a4i9p0w5/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
+      - docker push public.ecr.aws/a4i9p0w5/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_TAG}
+      - docker rmi ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      - docker rmi public.ecr.aws/a4i9p0w5/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
+      - docker rmi public.ecr.aws/a4i9p0w5/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_TAG}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ec2-user/.docker:/root/.docker
     when:
       event: tag
