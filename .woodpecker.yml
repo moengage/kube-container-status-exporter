@@ -1,0 +1,10 @@
+pipeline:
+  build:
+    group: build
+    image: plugins/ecr
+    repo: public.ecr.aws/a4i9p0w5/moengage/kube-container-status-exporter
+    context: ./
+    tags:
+      - ${DRONE_TAG}
+    when:
+      event: tag

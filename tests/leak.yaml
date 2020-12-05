@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leak
+  labels:
+    app: leak
+    kube-container-status-exporter: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: leak
+      kube-container-status-exporter: "true"
+  template:
+    metadata:
+      labels:
+        app: leak
+        kube-container-status-exporter: "true"
+    spec:
+      containers:
+      - name: leak
+        image: stephanlindauer/docker-memory-leak:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
