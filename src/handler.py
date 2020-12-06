@@ -20,5 +20,12 @@ logger = logging.getLogger()
 
 @kopf.on.event('', 'v1', 'pods', labels=POD_LABEL)
 async def create_fn(event, **_):
-    logging.error(event["object"]["status"])
+    data = event["object"]["status"]
+    data["metadata"] = {}
+    data["metadata"]["name"] = event["object"]["metadata"]["name"]
+    data["metadata"]["creationTimestamp"] =  event["object"]["metadata"]["creationTimestamp"]
+    data["metadata"]["namespace"] = event["object"]["metadata"]["namespace"]
+    data["metadata"]["labels"] = event["object"]["metadata"].get("labels")
+    data["metadata"]["annotations"] = event["object"]["metadata"].get("annotations")
+    logging.error(data)
 
