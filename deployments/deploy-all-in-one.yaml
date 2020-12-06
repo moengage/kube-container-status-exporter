@@ -7,8 +7,6 @@ metadata:
   labels:
     app: kube-container-status-exporter
 data:
-  POD_LABEL_KEY: kube-container-status-exporter
-  POD_LABEL_VALUE: "true"
   LOCAL: "false"
 ---
 # serviceaccount

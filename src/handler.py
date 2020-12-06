@@ -8,9 +8,12 @@ import logging
 LOCAL = os.getenv('LOCAL', 'true')
 if LOCAL == 'true': from local import *
 
-POD_LABEL_KEY = os.getenv('POD_LABEL_KEY', 'kube-container-status-exporter')
-POD_LABEL_VALUE = os.getenv('POD_LABEL_VALUE', 'true')
-POD_LABEL = {POD_LABEL_KEY: POD_LABEL_VALUE}
+POD_LABEL_KEY = os.getenv('POD_LABEL_KEY')
+POD_LABEL_VALUE = os.getenv('POD_LABEL_VALUE')
+if POD_LABEL_KEY and POD_LABEL_VALUE:
+    POD_LABEL = {POD_LABEL_KEY: POD_LABEL_VALUE}
+else:
+    POD_LABEL = {}
 
 logger = logging.getLogger()
 
